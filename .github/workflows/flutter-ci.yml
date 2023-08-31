@@ -1,0 +1,44 @@
+name: Flutter CI
+
+on:
+  push:
+    branches:
+      - payiotest-ci
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable' # or: 'beta', 'dev' or 'master'
+      - run: flutter pub get
+      - run: flutter build apk
+
+      - name: Upload to artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: test-app-profile
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Upload to gdrive
+        uses: adityak74/google-drive-upload-git-action@main
+        with:
+          credentials: ${{ secrets.GDRIVE_SECRET }}
+          filename: "build/app/outputs/flutter-apk/app-release.apk"
+          folderId: ${{ secrets.GDRIVE_CICD_FOLDER_ID }}
+          name: "CICD-TESTING-profile.apk" # Name of file in drive. Needs to be same as temporary file.
+          overwrite: "true" # This will overwrite temporary file
+          mimetype: application/vnd.android.package-archive
+  SendingApk:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Sending Mail
+        uses: fjogeleit/http-request-action@v1.9.2
+        with:
+          url: "https://cicd-sey3.onrender.com/sendMail"
+          method: 'POST'
+          data: '{"appLink": "https://drive.google.com/drive/u/0/folders/1bOSq8JLFOJPOsfadjLsHAVCbenOc-ikE?ths=true","subject": "SUBJECT OF MAIL","to": ["xwhiskasx@gmail.com", "xwhiskasx@gmail.com"]}'
