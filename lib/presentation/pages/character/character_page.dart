@@ -32,7 +32,7 @@ class _CharacterPageState extends State<CharacterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text("Best app"),
+          title: const Text("CI CD Bloc"),
         ),
         body: SafeArea(
           child: BlocConsumer<CharacterBloc, CharacterState>(listener: (context, state) {
