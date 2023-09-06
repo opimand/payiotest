@@ -2,6 +2,9 @@
 
 Test task for Payio
 
+### Update: 
+Added CI CD and Email notifications with new build APK
+
 ## Features
 - [x] Refactor the application to the best understanding of the design pattern.
 
